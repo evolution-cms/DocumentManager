@@ -12,7 +12,7 @@
   },
   "autoload": {
     "psr-4": {
-      "EvolutionCMS\\DocumentManager": "src"
+      "EvolutionCMS\\DocumentManager\\": "src"
     }
   },
   "extra": {
