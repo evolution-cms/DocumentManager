@@ -14,13 +14,5 @@
     "psr-4": {
       "EvolutionCMS\\DocumentManager\\": "src"
     }
-  },
-  "extra": {
-    "laravel": {
-      "providers": [
-        "EvolutionCMS\\Providers\\UserManagerServiceProvider"
-      ]
-
-    }
   }
 }
