@@ -106,7 +106,6 @@ class DocumentEdit extends DocumentCreate
             throw $exception;
         }
 
-        $this->prepareDocument();
         $this->prepareAliasDocument();
         $this->prepareEditDocument();
 
