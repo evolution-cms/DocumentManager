@@ -179,7 +179,7 @@ class DocumentCreate implements DocumentServiceInterface
         }
 
       
-        if (trim($this->documentData['pagetitle']) == "") {
+        if (isset($this->documentData['pagetitle']) && trim($this->documentData['pagetitle']) == "") {
             if ($this->documentData['type'] == "reference") {
                 $this->documentData['pagetitle'] = Lang::get('global.untitled_weblink');
             } else {
@@ -290,8 +290,8 @@ class DocumentCreate implements DocumentServiceInterface
         
         $this->documentData['menuindex'] = !empty($this->documentData['menuindex']) ? (int)$this->documentData['menuindex'] : 0;
 
-        $this->documentData['createdby'] = EvolutionCMS()->getLoginUserID('mgr');
-        $this->documentData['editedby'] = EvolutionCMS()->getLoginUserID('mgr');
+        $this->documentData['createdby'] = EvolutionCMS()->getLoginUserID();
+        $this->documentData['editedby'] = EvolutionCMS()->getLoginUserID();
         $this->documentData['createdon'] = $this->currentDate;
         $this->documentData['editedon'] = $this->currentDate;
         // invoke OnBeforeDocFormSave event
