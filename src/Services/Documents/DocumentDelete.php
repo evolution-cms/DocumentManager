@@ -131,7 +131,7 @@ class DocumentDelete extends DocumentCreate
         SiteContent::query()
             ->whereIn('id', $documentDeleteIds)
             ->update(['deleted' => 1,
-                'deletedby' => EvolutionCMS()->getLoginUserID('mgr'),
+                'deletedby' => EvolutionCMS()->getLoginUserID(),
                 'deletedon' => time()]);
 
 

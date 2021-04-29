@@ -163,7 +163,7 @@ class DocumentEdit extends DocumentCreate
     public function prepareEditDocument()
     {
         $existingDocument = SiteContent::query()->find($this->documentData['id'])->toArray();
-        $this->documentData['editedby'] = EvolutionCMS()->getLoginUserID('mgr');
+        $this->documentData['editedby'] = EvolutionCMS()->getLoginUserID();
         $this->documentData['editedon'] = $this->currentDate;
         $this->documentData['oldparent'] = $existingDocument['parent'];
         if(!isset($this->documentData['parent'])){
@@ -211,7 +211,7 @@ class DocumentEdit extends DocumentCreate
             $this->documentData['publishedby'] = EvolutionCMS()->getLoginUserID();
         } elseif ((!empty($this->documentData['pub_date']) && $this->documentData['pub_date'] <= $this->currentDate && $this->documentData['published'])) {
             $this->documentData['publishedon'] = $this->documentData['pub_date'];
-            $this->documentData['publishedby'] = EvolutionCMS()->getLoginUserID('mgr');
+            $this->documentData['publishedby'] = EvolutionCMS()->getLoginUserID();
         } elseif ($was_published && !$this->documentData['published']) {
             $this->documentData['publishedon'] = 0;
             $this->documentData['publishedby'] = 0;
