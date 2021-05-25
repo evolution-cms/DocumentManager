@@ -126,7 +126,7 @@ class DocumentCreate implements DocumentServiceInterface
         if (isset($this->documentData['unpub_date']) && !is_numeric($this->documentData['unpub_date'])) {
             unset($this->documentData['unpub_date']);
         }
-        $document = SiteContent::query()->create($this->documentData);
+        $document = SiteContent::query()->withTrashed()->create($this->documentData);
         $this->documentData['id'] = $document->getKey();
 
         $this->prepareTV();
@@ -222,12 +222,14 @@ class DocumentCreate implements DocumentServiceInterface
                 if (!EvolutionCMS()->getConfig('allow_duplicate_alias')) {
 
                     if (\EvolutionCMS\Models\SiteContent::query()
+                            ->withTrashed()
                             ->where('id', '<>', $this->documentData['id'])
                             ->where('alias', $this->documentData['alias'])->count() > 0) {
                         $cnt = 1;
                         $tempAlias = $this->documentData['alias'];
 
                         while (\EvolutionCMS\Models\SiteContent::query()
+                                ->withTrashed()
                                 ->where('id', '<>', $this->documentData['id'])
                                 ->where('alias', $tempAlias)->count() > 0) {
                             $tempAlias = $this->documentData['alias'];
@@ -238,12 +240,14 @@ class DocumentCreate implements DocumentServiceInterface
                     }
                 } else {
                     if (\EvolutionCMS\Models\SiteContent::query()
+                            ->withTrashed()
                             ->where('id', '<>', $this->documentData['id'])
                             ->where('alias', $this->documentData['alias'])
                             ->where('parent', $this->documentData['parent'])->count() > 0) {
                         $cnt = 1;
                         $tempAlias = $this->documentData['alias'];
                         while (\EvolutionCMS\Models\SiteContent::query()
+                                ->withTrashed()
                                 ->where('id', '<>', $this->documentData['id'])
                                 ->where('alias', $tempAlias)
                                 ->where('parent', $this->documentData['parent'])->count() > 0) {
@@ -257,7 +261,9 @@ class DocumentCreate implements DocumentServiceInterface
             } // check for duplicate alias name if not allowed
             elseif ($this->documentData['alias'] && !EvolutionCMS()->getConfig('allow_duplicate_alias')) {
                 $this->documentData['alias'] = EvolutionCMS()->stripAlias($this->documentData['alias']);
-                $docid = \EvolutionCMS\Models\SiteContent::query()->select('id')
+                $docid = \EvolutionCMS\Models\SiteContent::query()
+                    ->select('id')
+                    ->withTrashed()
                     ->where('id', '<>', $this->documentData['id'])
                     ->where('alias', $this->documentData['alias']);
                 if (EvolutionCMS()->getConfig('use_alias_path')) {
@@ -272,6 +278,7 @@ class DocumentCreate implements DocumentServiceInterface
             elseif ($this->documentData['alias']) {
                 $this->documentData['alias'] = EvolutionCMS()->stripAlias($this->documentData['alias']);
                 $docid = \EvolutionCMS\Models\SiteContent::query()->select('id')
+                    ->withTrashed()
                     ->where('id', '<>', $this->documentData['id'])
                     ->where('alias', $this->documentData['alias'])->where('parent', $this->documentData['parent'])->first();
                 if (!is_null($docid)) {
@@ -298,13 +305,14 @@ class DocumentCreate implements DocumentServiceInterface
         switch (EvolutionCMS()->getConfig('docid_incrmnt_method')) {
             case '1':
                 $id = \EvolutionCMS\Models\SiteContent::query()
+                    ->withTrashed()
                     ->leftJoin('site_content as t1', 'site_content.id +1', '=', 't1.id')
                     ->whereNull('t1.id')->min('site_content.id');
                 $id++;
 
                 break;
             case '2':
-                $id = \EvolutionCMS\Models\SiteContent::max('id');
+                $id = \EvolutionCMS\Models\SiteContent::withTrashed()->max('id');
                 $id++;
                 break;
 
@@ -342,7 +350,7 @@ class DocumentCreate implements DocumentServiceInterface
         // update parent folder status
         if ($this->documentData['parent'] != 0) {
             $fields = array('isfolder' => 1);
-            \EvolutionCMS\Models\SiteContent::where('id', $this->documentData['parent'])->update(['isfolder' => 1]);
+            \EvolutionCMS\Models\SiteContent::withTrashed()->where('id', $this->documentData['parent'])->update(['isfolder' => 1]);
         }
     }
 

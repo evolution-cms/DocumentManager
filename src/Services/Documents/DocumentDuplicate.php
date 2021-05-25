@@ -112,7 +112,7 @@ class DocumentDuplicate extends DocumentCreate
                 'id' => $this->documentData['id']
             ));
         }
-        $documentObject = SiteContent::query()->find($this->documentData['id']);
+        $documentObject = SiteContent::query()->withTrashed()->find($this->documentData['id']);
         $tvArray = $documentObject->tv->pluck('value', 'name')->toArray();
 
         $documentArray = array_merge($documentObject->toArray(), $tvArray);
@@ -120,13 +120,14 @@ class DocumentDuplicate extends DocumentCreate
         switch (EvolutionCMS()->getConfig('docid_incrmnt_method')) {
             case '1':
                 $minId = \EvolutionCMS\Models\SiteContent::query()
+                    ->withTrashed()
                     ->leftJoin('site_content as T1', \DB::raw('(') . 'site_content.id' . \DB::raw('+1)'), '=', 'T1.id')
                     ->whereNull('T1.id')->min('site_content.id');
 
                 $documentArray['id'] = $minId + 1;
                 break;
             case '2':
-                $documentArray['id'] = \EvolutionCMS\Models\SiteContent::query()->max('id') + 1;
+                $documentArray['id'] = \EvolutionCMS\Models\SiteContent::query()->withTrashed()->max('id') + 1;
                 break;
 
             default:
@@ -136,9 +137,9 @@ class DocumentDuplicate extends DocumentCreate
         // Once we've grabbed the document object, start doing some modifications
         if (!isset($this->documentData['toplevel'])) {
             // count duplicates
-            $pagetitle = \EvolutionCMS\Models\SiteContent::find($this->documentData['id'])->pagetitle;
+            $pagetitle = \EvolutionCMS\Models\SiteContent::withTrashed()->find($this->documentData['id'])->pagetitle;
 
-            $count = \EvolutionCMS\Models\SiteContent::query()->where('pagetitle', 'LIKE', '%' . $pagetitle . ' ' . \Lang::get('global.duplicated_el_suffix') . '%')->count();
+            $count = \EvolutionCMS\Models\SiteContent::query()->withTrashed()->where('pagetitle', 'LIKE', '%' . $pagetitle . ' ' . \Lang::get('global.duplicated_el_suffix') . '%')->count();
 
             if ($count >= 1) {
                 $count = ' ' . ($count + 1);
@@ -170,7 +171,7 @@ class DocumentDuplicate extends DocumentCreate
                 'new_id' => $document->getKey()
             ));
         }
-        $documents = \EvolutionCMS\Models\SiteContent::where('parent', $this->documentData['id'])->where('deleted', 0)->orderBy('id')->get();
+        $documents = \EvolutionCMS\Models\SiteContent::withTrashed()->where('parent', $this->documentData['id'])->where('deleted', 0)->orderBy('id')->get();
 
         foreach ($documents as $item) {
             \DocumentManager::duplicate(['id' => $item->id, 'parent' => $document->getKey(), 'toplevel' => 1]);

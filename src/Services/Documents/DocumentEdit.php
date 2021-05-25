@@ -117,7 +117,7 @@ class DocumentEdit extends DocumentCreate
             ));
         }
 
-        $document = SiteContent::query()->find($this->documentData['id']);
+        $document = SiteContent::query()->withTrashed()->find($this->documentData['id']);
         $document->update($this->documentData);
         $this->prepareTV();
         $this->saveTVs();
@@ -162,7 +162,7 @@ class DocumentEdit extends DocumentCreate
 
     public function prepareEditDocument()
     {
-        $existingDocument = SiteContent::query()->find($this->documentData['id'])->toArray();
+        $existingDocument = SiteContent::query()->withTrashed()->find($this->documentData['id'])->toArray();
         $this->documentData['editedby'] = EvolutionCMS()->getLoginUserID();
         $this->documentData['editedon'] = $this->currentDate;
         $this->documentData['oldparent'] = $existingDocument['parent'];
@@ -190,7 +190,7 @@ class DocumentEdit extends DocumentCreate
         }
 
         // check to see document is a folder
-        $child = \EvolutionCMS\Models\SiteContent::select('id')->where('parent', $this->documentData['id'])->first();
+        $child = \EvolutionCMS\Models\SiteContent::withTrashed()->select('id')->where('parent', $this->documentData['id'])->first();
         if (!is_null($child)) {
             $this->documentData['isfolder'] = 1;
         }

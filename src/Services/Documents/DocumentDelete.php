@@ -105,7 +105,7 @@ class DocumentDelete extends DocumentCreate
             throw $exception;
         }
 
-        $document = SiteContent::query()->find($this->documentData['id']);
+        $document = SiteContent::query()->withTrashed()->find($this->documentData['id']);
 
         $children = $document->getAllChildren($document);
         $documentDeleteIds = $children;
@@ -129,6 +129,7 @@ class DocumentDelete extends DocumentCreate
             }
         }
         SiteContent::query()
+            ->withTrashed()
             ->whereIn('id', $documentDeleteIds)
             ->update(['deleted' => 1,
                 'deletedby' => EvolutionCMS()->getLoginUserID(),

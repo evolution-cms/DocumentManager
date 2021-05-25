@@ -119,7 +119,7 @@ class DocumentClearCart extends DocumentCreate
         \EvolutionCMS\Models\SiteTmplvarContentvalue::query()->whereIn('contentid', $ids)->delete();
 
         //'undelete' the document.
-        \EvolutionCMS\Models\SiteContent::query()->where('deleted', 1)->forceDelete();
+        \EvolutionCMS\Models\SiteContent::query()->withTrashed()->where('deleted', 1)->forceDelete();
 
         // invoke OnEmptyTrash event
         if ($this->events) {
@@ -131,7 +131,7 @@ class DocumentClearCart extends DocumentCreate
         if ($this->cache) {
             EvolutionCMS()->clearCache('full');
         }
-        return SiteContent::query()->first();
+        return SiteContent::query()->withTrashed()->first();
     }
 
     /**

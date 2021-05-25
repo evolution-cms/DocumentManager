@@ -104,7 +104,7 @@ class DocumentUnpublish extends DocumentCreate
             throw $exception;
         }
 
-        $document = SiteContent::query()->find($this->documentData['id']);
+        $document = SiteContent::query()->withTrashed()->find($this->documentData['id']);
 
         $document->published = 0;
         $document->publishedby = EvolutionCMS()->getLoginUserID();

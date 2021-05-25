@@ -105,7 +105,7 @@ class DocumentPublish extends DocumentCreate
             throw $exception;
         }
 
-        $document = SiteContent::query()->find($this->documentData['id']);
+        $document = SiteContent::query()->withTrashed()->find($this->documentData['id']);
 
         $document->published = 1;
         $document->publishedby = EvolutionCMS()->getLoginUserID();
