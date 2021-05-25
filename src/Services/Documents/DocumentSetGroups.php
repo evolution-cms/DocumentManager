@@ -158,7 +158,7 @@ class DocumentSetGroups extends DocumentCreate
             EvolutionCMS()->clearCache('full');
         }
 
-        return SiteContent::query()->find($this->documentData['id']);
+        return SiteContent::query()->withTrashed()->find($this->documentData['id']);
     }
 
     /**

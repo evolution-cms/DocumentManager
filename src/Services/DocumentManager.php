@@ -16,7 +16,7 @@ class DocumentManager
 
     public function get($id)
     {
-        return SiteContent::find($id);
+        return SiteContent::withTrashed()->find($id);
     }
 
     public function create(array $userData, bool $events = true, bool $cache = true)
