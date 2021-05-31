@@ -106,7 +106,9 @@ class DocumentEdit extends DocumentCreate
             throw $exception;
         }
 
-        $this->prepareAliasDocument();
+        if (isset($this->documentData['pagetitle'])) {
+            $this->prepareAliasDocument();
+        }
         $this->prepareEditDocument();
 
         // invoke OnBeforeDocFormSave event
@@ -166,10 +168,10 @@ class DocumentEdit extends DocumentCreate
         $this->documentData['editedby'] = EvolutionCMS()->getLoginUserID();
         $this->documentData['editedon'] = $this->currentDate;
         $this->documentData['oldparent'] = $existingDocument['parent'];
-        if(!isset($this->documentData['parent'])){
+        if (!isset($this->documentData['parent'])) {
             $this->documentData['parent'] = $this->documentData['oldparent'];
         }
-        if(!isset($this->documentData['template'])){
+        if (!isset($this->documentData['template'])) {
             $this->documentData['template'] = $existingDocument['template'];
         }
 
